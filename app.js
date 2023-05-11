@@ -16,6 +16,7 @@ const menRoute = require('./routes/catalog/mensFashion');
 const jewelRoute = require('./routes/catalog/jewellery');
 const womenRoute = require('./routes/catalog/womensFashion');
 const watchRoute = require('./routes/catalog/watches');
+const prodRoute = require('./routes/catalog/products')
 
 //connecting to database 
 const conn = connectDB();
@@ -44,6 +45,7 @@ app.use('/catalog/watches', watchRoute);
 app.use('/catalog/mensFashion', menRoute);
 app.use('/catalog/jewellery', jewelRoute);
 app.use('/catalog/womensFashion', womenRoute);
+app.use('/catalog/products', prodRoute);
 
 // start server
 const port = process.env.PORT || 8082;
