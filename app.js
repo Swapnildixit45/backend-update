@@ -3,6 +3,9 @@ const express = require('express');
 const connectDB = require('./config/db');
 const stripe = require('stripe')('sk_test_51N6tgNSEf3gYCXWg4gSHNCQT8eyExVB6iu9gEAD6cMrhcPfTtqwrRKM0POU1jPcUuyJZsDmxYQLON1TnLcSa6y1C00CGkJi2Up');
 const cors = require('cors');
+const userRouter = require("./src/routes/userRoutes")
+const noteRouter = require("./src/routes/noteRoutes")
+
 // const bodyParser = require('body-parser'); // MIDDLEWARE ONLY
 
 // creating express variable
@@ -49,6 +52,9 @@ app.use('/catalog/jewellery', jewelRoute);
 app.use('/catalog/womensFashion', womenRoute);
 app.use('/catalog/products', prodRoute);
 
+app.use("/users",userRouter);
+app.use("/note",noteRouter);
+
 app.post('/checkout', async (req, res) => {
     if (req.method === 'POST') {
         try {
@@ -89,6 +95,9 @@ app.post('/checkout', async (req, res) => {
     }
 })
 
+app.get("/",(req,res)=>{
+    res.send("Notes API");
+})
 // start server
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
