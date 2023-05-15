@@ -1,11 +1,15 @@
 // imports 
 const express = require('express');
 const connectDB = require('./config/db');
+const stripe = require('stripe')('sk_test_51N6tgNSEf3gYCXWg4gSHNCQT8eyExVB6iu9gEAD6cMrhcPfTtqwrRKM0POU1jPcUuyJZsDmxYQLON1TnLcSa6y1C00CGkJi2Up');
 const cors = require('cors');
 // const bodyParser = require('body-parser'); // MIDDLEWARE ONLY
 
 // creating express variable
 const app = express();
+app.use(cors());
+app.use(express.static("public"))
+app.use(express.json());
 
 // IMPORT ROUTES //
 app.get('/', (req, res) => res.send('Hello world!'));
@@ -33,9 +37,7 @@ console.log(names);
 
 console.log(mongoose.modelNames());
 
-app.use(express.json());
-// Using cors package to allow cross-platform data distribution
-app.use(cors());
+
 
 // CREATING ROUTES //
 // catalog
@@ -47,6 +49,46 @@ app.use('/catalog/jewellery', jewelRoute);
 app.use('/catalog/womensFashion', womenRoute);
 app.use('/catalog/products', prodRoute);
 
+app.post('/checkout', async (req, res) => {
+    if (req.method === 'POST') {
+        try {
+            const params = {
+                submit_type: 'pay',
+                mode: 'payment',
+                payment_method_types: ['card'],
+                line_items: req.body.map((item) => {
+                    return {
+                        price_data: {
+                            currency: 'inr',
+                            product_data: {
+                                name: item.title,
+                            },
+                            unit_amount: item.price.value * 100,
+                        },
+                        adjustable_quantity: {
+                            enabled: true,
+                            minimum: 1,
+                        },
+                        quantity: item.quantity
+                    }
+                }),
+                success_url: 'http://localhost:3000/success',
+                cancel_url: 'http://localhost:3000/canceled',
+            }
+
+            // Create Checkout Sessions from body params.
+            const session = await stripe.checkout.sessions.create(params);
+
+            res.status(200).json(session);
+        } catch (err) {
+            res.status(err.statusCode || 500).json(err.message);
+        }
+    } else {
+        res.setHeader('Allow', 'POST');
+        res.status(405).end('Method Not Allowed');
+    }
+})
+
 // start server
-const port = process.env.PORT || 8082;
+const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
