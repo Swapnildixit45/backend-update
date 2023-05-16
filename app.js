@@ -78,8 +78,8 @@ app.post('/checkout', async (req, res) => {
                         quantity: item.quantity
                     }
                 }),
-                success_url: 'http://localhost:3000/success',
-                cancel_url: 'http://localhost:3000/canceled',
+                success_url: 'https://nextgenbackend.onrender.com/success',
+                cancel_url: 'https://nextgenbackend.onrender.com/canceled',
             }
 
             // Create Checkout Sessions from body params.
